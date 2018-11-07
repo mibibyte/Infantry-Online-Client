@@ -1,16 +1,8 @@
 # Authors
 
-## Project Developers
-
-1. @hellspawn (HellSpawn)
-
-## Project Coordinators
-
-1. @jovan-s (Jovan S.)
-
-## Additional Free Infantry Developers
-
-1. @mizzouse (Brian R.)
+Joshua S. (HellSpawn) - Project Developer
+Jovan S. - Project Coordinator
+Brian R. (Mizzouse) - Free Infantry Developer
 
 ## Contributing
 
