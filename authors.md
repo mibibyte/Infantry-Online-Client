@@ -1,7 +1,9 @@
 # Authors
 
 Joshua S. (HellSpawn) - Project Developer
+
 Jovan S. - Project Coordinator
+
 Brian R. (Mizzouse) - Free Infantry Developer
 
 ## Contributing
