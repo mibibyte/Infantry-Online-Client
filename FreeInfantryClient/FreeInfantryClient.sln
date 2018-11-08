@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2026
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FreeInfantryClient", "FreeInfantryClient\FreeInfantryClient.csproj", "{BBA41398-CD40-4617-96B2-7556512DBE2D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BBA41398-CD40-4617-96B2-7556512DBE2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBA41398-CD40-4617-96B2-7556512DBE2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBA41398-CD40-4617-96B2-7556512DBE2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBA41398-CD40-4617-96B2-7556512DBE2D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B7AF09E0-DEA8-453E-9A56-487D128AC7C0}
+	EndGlobalSection
+EndGlobal
