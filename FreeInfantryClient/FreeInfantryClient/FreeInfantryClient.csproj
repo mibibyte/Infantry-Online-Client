@@ -62,7 +62,6 @@
     <Compile Include="Game\Interfaces\ILocatable.cs" />
     <Compile Include="Game\Logic\Commands\Chat\Chat.cs" />
     <Compile Include="Game\Logic\Commands\Registrar.cs" />
-    <Compile Include="Game\Logic\Helpers\Helpers.cs" />
     <Compile Include="Game\Logic\Packets\Login\Login.cs" />
     <Compile Include="Game\Logic\Packets\State\Players.cs" />
     <Compile Include="Game\Logic\Registrar.cs" />
@@ -74,7 +73,7 @@
     <Compile Include="Game\Logic\Packets\Social\Chat.cs" />
     <Compile Include="Game\Protocol\Helpers\Objects.cs" />
     <Compile Include="Game\Protocol\Helpers\PacketIDs.cs" />
-    <Compile Include="Game\Protocol\Helpers\Social.cs" />
+    <Compile Include="Game\Protocol\Helpers\UpdateTypes.cs" />
     <Compile Include="Game\Protocol\Packets\CS_ArenaJoin.cs" />
     <Compile Include="Game\Protocol\Packets\Game\SC_ChangeTeam.cs" />
     <Compile Include="Game\Protocol\Packets\Game\State\SC_ArenaMessage.cs" />
@@ -95,13 +94,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Windows\Account\Controllers\AccountController.cs" />
     <Compile Include="Windows\Account\Controllers\AssetDownloadController.cs" />
-    <Compile Include="Windows\Account\Helpers\Assets.cs" />
-    <Compile Include="Windows\Account\Helpers\IniFile.cs" />
-    <Compile Include="Windows\Account\Helpers\IniSection.cs" />
-    <Compile Include="Windows\Account\Helpers\IStatus.cs" />
-    <Compile Include="Windows\Account\Helpers\MD5.cs" />
-    <Compile Include="Windows\Account\Helpers\Register.cs" />
-    <Compile Include="Windows\Account\Helpers\XmlParser.cs" />
+    <Compile Include="Windows\Account\Assets\Assets.cs" />
+    <Compile Include="Settings\Ini\IniFile.cs" />
+    <Compile Include="Settings\Ini\IniSection.cs" />
+    <Compile Include="Windows\Account\Controllers\Status.cs" />
+    <Compile Include="Encryption\MD5.cs" />
+    <Compile Include="Settings\Registry\WinRegistry.cs" />
+    <Compile Include="Windows\Account\Assets\XmlParser.cs" />
     <Compile Include="Windows\Account\Login.cs">
       <SubType>Form</SubType>
     </Compile>

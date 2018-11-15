@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FreeInfantryClient.Windows.Helpers
+namespace FreeInfantryClient.Windows.Account
 {
     /// <summary>
     /// Our asset object

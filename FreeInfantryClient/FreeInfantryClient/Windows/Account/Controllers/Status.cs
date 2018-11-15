@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace FreeInfantryClient.Windows.Helpers
+namespace FreeInfantryClient.Windows.Account
 {
-    public class IStatus
+    public class Status
     {
         public class LoginRequestObject
         {

@@ -1,4 +1,4 @@
-﻿namespace FreeInfantryClient.Windows
+﻿namespace FreeInfantryClient.Windows.Account
 {
     partial class ReminderForm
     {

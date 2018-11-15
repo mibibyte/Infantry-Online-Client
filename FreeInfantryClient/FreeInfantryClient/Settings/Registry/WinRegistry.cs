@@ -1,8 +1,8 @@
 ﻿using Microsoft.Win32;
 
-namespace FreeInfantryClient.Windows.Helpers
+namespace FreeInfantryClient.Settings
 {
-    internal class Register
+    internal class WinRegistry
     {
         /// <summary>
         /// Writes or updates our options registry keys

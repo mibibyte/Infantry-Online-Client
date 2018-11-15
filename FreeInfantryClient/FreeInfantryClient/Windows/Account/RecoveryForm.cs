@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 using FreeInfantryClient.Windows.Account.Controllers;
 
-namespace FreeInfantryClient.Windows
+namespace FreeInfantryClient.Windows.Account
 {
     public partial class RecoveryForm : Form
     {

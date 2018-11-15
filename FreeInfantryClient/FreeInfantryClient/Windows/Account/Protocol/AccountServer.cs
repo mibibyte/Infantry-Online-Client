@@ -5,7 +5,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 
-using FreeInfantryClient.Windows.Helpers;
 
 namespace FreeInfantryClient.Windows.Account.Protocol
 {
@@ -19,7 +18,7 @@ namespace FreeInfantryClient.Windows.Account.Protocol
         /// <summary>
         /// Sends a ping request to our account server
         /// </summary>
-        public static IStatus.PingRequestStatusCode PingAccount(string pingUrl)
+        public static Status.PingRequestStatusCode PingAccount(string pingUrl)
         {
             HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(pingUrl);
             httpWebRequest.Method = "GET";
@@ -29,19 +28,19 @@ namespace FreeInfantryClient.Windows.Account.Protocol
                 using (StreamReader streamReader = new StreamReader(httpWebRequest.GetResponse().GetResponseStream()))
                 {
                     streamReader.ReadToEnd();
-                    return IStatus.PingRequestStatusCode.Ok;
+                    return Status.PingRequestStatusCode.Ok;
                 }
             }
             catch (WebException ex)
             {
                 if ((HttpWebResponse)ex.Response == null)
-                { return IStatus.PingRequestStatusCode.NotFound; }
+                { return Status.PingRequestStatusCode.NotFound; }
 
                 switch (((HttpWebResponse)ex.Response).StatusCode)
                 {
                     case HttpStatusCode.NotFound:
                     default:
-                        return IStatus.PingRequestStatusCode.NotFound;
+                        return Status.PingRequestStatusCode.NotFound;
                 }
             }
         }
@@ -49,7 +48,7 @@ namespace FreeInfantryClient.Windows.Account.Protocol
         /// <summary>
         /// Sends a register request to our account server
         /// </summary>
-        public static IStatus.RegistrationStatusCode RegisterAccount(IStatus.RegisterRequestObject requestModel, string RegisterUrl)
+        public static Status.RegistrationStatusCode RegisterAccount(Status.RegisterRequestObject requestModel, string RegisterUrl)
         {
             if (requestModel == null)
             { throw new ArgumentNullException("requestModel"); }
@@ -65,7 +64,7 @@ namespace FreeInfantryClient.Windows.Account.Protocol
             }
             catch (WebException)
             {
-                return IStatus.RegistrationStatusCode.ServerError;
+                return Status.RegistrationStatusCode.ServerError;
             }
 
             try
@@ -73,35 +72,35 @@ namespace FreeInfantryClient.Windows.Account.Protocol
                 using (StreamReader streamReader = new StreamReader(httpWebRequest.GetResponse().GetResponseStream()))
                 {
                     streamReader.ReadToEnd();
-                    return IStatus.RegistrationStatusCode.Ok;
+                    return Status.RegistrationStatusCode.Ok;
                 }
             }
             catch (WebException ex)
             {
                 if ((HttpWebResponse)ex.Response == null)
-                { return IStatus.RegistrationStatusCode.NoResponse; }
+                { return Status.RegistrationStatusCode.NoResponse; }
 
                 switch (((HttpWebResponse)ex.Response).StatusCode)
                 {
                     case HttpStatusCode.Forbidden:
                         Reason = ((HttpWebResponse)ex.Response).StatusDescription;
-                        return IStatus.RegistrationStatusCode.UsernameTaken;
+                        return Status.RegistrationStatusCode.UsernameTaken;
                     case HttpStatusCode.Conflict:
                         Reason = ((HttpWebResponse)ex.Response).StatusDescription;
-                        return IStatus.RegistrationStatusCode.EmailTaken;
+                        return Status.RegistrationStatusCode.EmailTaken;
                     case HttpStatusCode.NotAcceptable:
                         Reason = ((HttpWebResponse)ex.Response).StatusDescription;
-                        return IStatus.RegistrationStatusCode.WeakCredentials;
+                        return Status.RegistrationStatusCode.WeakCredentials;
                     case HttpStatusCode.InternalServerError:
                         Reason = ((HttpWebResponse)ex.Response).StatusDescription;
-                        return IStatus.RegistrationStatusCode.ServerError;
+                        return Status.RegistrationStatusCode.ServerError;
                     case HttpStatusCode.Created:
-                        return IStatus.RegistrationStatusCode.Ok;
+                        return Status.RegistrationStatusCode.Ok;
                     case HttpStatusCode.BadRequest:
-                        return IStatus.RegistrationStatusCode.MalformedData;
+                        return Status.RegistrationStatusCode.MalformedData;
 
                     default:
-                        return IStatus.RegistrationStatusCode.ServerError;
+                        return Status.RegistrationStatusCode.ServerError;
                 }
             }
         }
@@ -109,7 +108,7 @@ namespace FreeInfantryClient.Windows.Account.Protocol
         /// <summary>
         /// Sends a login request to our account server
         /// </summary>
-        public static IStatus.LoginStatusCode LoginAccount(IStatus.LoginRequestObject requestModel, string LoginUrl, out IStatus.LoginResponseObject payload)
+        public static Status.LoginStatusCode LoginAccount(Status.LoginRequestObject requestModel, string LoginUrl, out Status.LoginResponseObject payload)
         {
             if (requestModel == null)
             { throw new ArgumentNullException("requestModel"); }
@@ -126,7 +125,7 @@ namespace FreeInfantryClient.Windows.Account.Protocol
             catch (WebException)
             {
                 payload = null;
-                return IStatus.LoginStatusCode.ServerError;
+                return Status.LoginStatusCode.ServerError;
             }
 
             try
@@ -134,14 +133,14 @@ namespace FreeInfantryClient.Windows.Account.Protocol
                 using (StreamReader streamReader = new StreamReader(httpWebRequest.GetResponse().GetResponseStream()))
                 {
                     string str = streamReader.ReadToEnd();
-                    payload = JsonConvert.DeserializeObject<IStatus.LoginResponseObject>(str);
+                    payload = JsonConvert.DeserializeObject<Status.LoginResponseObject>(str);
                     if (string.IsNullOrWhiteSpace(payload.TicketId.ToString()) || string.IsNullOrWhiteSpace(payload.Username))
                     {
                         payload = null;
                         Reason = "Incorrect username or password.";
-                        return IStatus.LoginStatusCode.MalformedData;
+                        return Status.LoginStatusCode.MalformedData;
                     }
-                    return IStatus.LoginStatusCode.Ok;
+                    return Status.LoginStatusCode.Ok;
                 }
             }
             catch (WebException ex)
@@ -149,7 +148,7 @@ namespace FreeInfantryClient.Windows.Account.Protocol
                 if ((HttpWebResponse)ex.Response == null)
                 {
                     payload = null;
-                    return IStatus.LoginStatusCode.NoResponse;
+                    return Status.LoginStatusCode.NoResponse;
                 }
 
                 switch (((HttpWebResponse)ex.Response).StatusCode)
@@ -157,15 +156,15 @@ namespace FreeInfantryClient.Windows.Account.Protocol
                     case HttpStatusCode.BadRequest:
                         payload = null;
                         Reason = ((HttpWebResponse)ex.Response).StatusDescription;
-                        return IStatus.LoginStatusCode.MalformedData;
+                        return Status.LoginStatusCode.MalformedData;
                     case HttpStatusCode.NotFound:
                         payload = null;
                         Reason = ((HttpWebResponse)ex.Response).StatusDescription;
-                        return IStatus.LoginStatusCode.InvalidCredentials;
+                        return Status.LoginStatusCode.InvalidCredentials;
 
                     default:
                         payload = null;
-                        return IStatus.LoginStatusCode.ServerError;
+                        return Status.LoginStatusCode.ServerError;
                 }
             }
         }
@@ -173,7 +172,7 @@ namespace FreeInfantryClient.Windows.Account.Protocol
         /// <summary>
         /// Sends a recovery request to our account server
         /// </summary>
-        public static IStatus.RecoverStatusCode RecoverAccount(IStatus.RecoverRequestObject requestModel, string RequestUrl, out string payload)
+        public static Status.RecoverStatusCode RecoverAccount(Status.RecoverRequestObject requestModel, string RequestUrl, out string payload)
         {
             payload = null;
             if (requestModel == null)
@@ -189,35 +188,35 @@ namespace FreeInfantryClient.Windows.Account.Protocol
                 httpWebRequest.GetRequestStream().Write(bytes, 0, bytes.Length);
             }
             catch (WebException)
-            { return IStatus.RecoverStatusCode.ServerError; }
+            { return Status.RecoverStatusCode.ServerError; }
 
             try
             {
                 using (StreamReader streamReader = new StreamReader(httpWebRequest.GetResponse().GetResponseStream()))
                 {
                     payload = streamReader.ReadToEnd();
-                    return IStatus.RecoverStatusCode.Ok;
+                    return Status.RecoverStatusCode.Ok;
                 }
             }
             catch (WebException ex)
             {
                 if ((HttpWebResponse)ex.Response == null)
-                { return IStatus.RecoverStatusCode.NoResponse; }
+                { return Status.RecoverStatusCode.NoResponse; }
 
                 switch (((HttpWebResponse)ex.Response).StatusCode)
                 {
                     case HttpStatusCode.BadRequest:
                         Reason = ((HttpWebResponse)ex.Response).StatusDescription;
-                        return IStatus.RecoverStatusCode.MalformedData;
+                        return Status.RecoverStatusCode.MalformedData;
                     case HttpStatusCode.NotFound:
                         Reason = ((HttpWebResponse)ex.Response).StatusDescription;
-                        return IStatus.RecoverStatusCode.InvalidCredentials;
+                        return Status.RecoverStatusCode.InvalidCredentials;
                     case HttpStatusCode.InternalServerError:
                         Reason = ((HttpWebResponse)ex.Response).StatusDescription;
-                        return IStatus.RecoverStatusCode.ServerError;
+                        return Status.RecoverStatusCode.ServerError;
 
                     default:
-                        return IStatus.RecoverStatusCode.ServerError;
+                        return Status.RecoverStatusCode.ServerError;
                 }
             }
         }

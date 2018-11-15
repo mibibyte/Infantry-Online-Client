@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using FreeInfantryClient.Windows.Helpers;
 using FreeInfantryClient.Windows.Account.Controllers;
+using FreeInfantryClient.Settings;
 
-namespace FreeInfantryClient.Windows
+
+namespace FreeInfantryClient.Windows.Account
 {
     public partial class RegisterForm : Form
     {
@@ -66,7 +67,7 @@ namespace FreeInfantryClient.Windows
                 { return; }
             }
 
-            settings["Credentials"]["Reminder"] = string.IsNullOrWhiteSpace(ReminderBox.Text) ? string.Empty : ReminderBox.Text;
+            settings.sections["Credentials"].section["Reminder"] = string.IsNullOrWhiteSpace(ReminderBox.Text) ? string.Empty : ReminderBox.Text;
             settings.Save();
 
             Cursor.Current = Cursors.WaitCursor;

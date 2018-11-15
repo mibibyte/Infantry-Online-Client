@@ -7,10 +7,10 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Windows.Forms;
 
-namespace FreeInfantryClient.Windows.Helpers
+namespace FreeInfantryClient.Encryption
 {
 
-    internal class Md5
+    public class Md5
     {
         /// <summary>
         /// Creates an MD5 hash from a specific string

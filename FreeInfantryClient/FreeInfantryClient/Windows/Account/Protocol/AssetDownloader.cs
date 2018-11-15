@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Windows.Forms;
 
-using FreeInfantryClient.Windows.Helpers;
+using FreeInfantryClient.Encryption;
 
 namespace FreeInfantryClient.Windows.Account.Protocol
 {

@@ -4,11 +4,13 @@ using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Drawing;
-using FreeInfantryClient.Game;
-using FreeInfantryClient.Windows.Helpers;
-using FreeInfantryClient.Windows.Account.Controllers;
 
-namespace FreeInfantryClient.Windows
+using FreeInfantryClient.Game;
+using FreeInfantryClient.Windows.Account.Controllers;
+using FreeInfantryClient.Settings;
+using FreeInfantryClient.Encryption;
+
+namespace FreeInfantryClient.Windows.Account
 {
     public partial class Login : Form
     {
@@ -76,8 +78,8 @@ namespace FreeInfantryClient.Windows
                 if (!settings.Load())
                 { return false; }
 
-                settings["Launcher"]["Version"] = Application.ProductVersion;
-                Register.WriteAddressKeys(settings.Get("Launcher","Directory1"), settings.Get("Launcher","Directory2"));
+                settings.sections["Launcher"].section["Version"] = Application.ProductVersion;
+                WinRegistry.WriteAddressKeys(settings.Get("Launcher","Directory1"), settings.Get("Launcher","Directory2"));
                 settings.Save();
                 return true;
             }
@@ -93,8 +95,8 @@ namespace FreeInfantryClient.Windows
                 if (!settings.Load())
                 { return false; }
 
-                settings["Launcher"]["Version"] = Application.ProductVersion;
-                Register.WriteAddressKeys(settings.Get("Launcher", "Directory1"), settings.Get("Launcher", "Directory2"));
+                settings.sections["Launcher"].section["Version"] = Application.ProductVersion;
+                WinRegistry.WriteAddressKeys(settings.Get("Launcher", "Directory1"), settings.Get("Launcher", "Directory2"));
                 settings.Save();
                 return true;
             }
@@ -175,7 +177,7 @@ namespace FreeInfantryClient.Windows
                 var result = form.ShowDialog();
                 if (result == DialogResult.OK)
                 {
-                    settings["Credentials"]["Reminder"] = form.Reminder;
+                    settings.sections["Credentials"].section["Reminder"] = form.Reminder;
                     settings.Save();
                 }
             }
@@ -244,17 +246,17 @@ namespace FreeInfantryClient.Windows
                 case CheckState.Checked:
                     //Was the text changed? We don't overwrite till neccessary
                     if (pswdTextChanged == true)
-                    { settings["Credentials"]["Password"] = Md5.Hash(PasswordBox.Text.Trim()); }
-                    Register.WriteAddressKey("PasswordLength", "Launcher", PasswordBox.Text.Length.ToString());
+                    { settings.sections["Credentials"].section["Password"] = Md5.Hash(PasswordBox.Text.Trim()); }
+                    WinRegistry.WriteAddressKey("PasswordLength", "Launcher", PasswordBox.Text.Length.ToString());
                     break;
 
                 case CheckState.Unchecked:
-                    settings["Credentials"]["Password"] = string.Empty;
-                    Register.DeleteValue("PasswordLength", "Launcher");
+                    settings.sections["Credentials"].section["Password"] = string.Empty;
+                    WinRegistry.DeleteValue("PasswordLength", "Launcher");
                     break;
             }
 
-            settings["Credentials"]["Username"] = UsernameBox.Text.Trim();
+            settings.sections["Credentials"].section["Username"] = UsernameBox.Text.Trim();
             settings.Save();
 
             //Get our ticket id
@@ -317,7 +319,7 @@ namespace FreeInfantryClient.Windows
 
             if (pswd.Length <= 0)
             { return; }
-            string data = Register.GetKeyData("PasswordLength", "Launcher");
+            string data = WinRegistry.GetKeyData("PasswordLength", "Launcher");
             string test = string.Empty;
             int length;
             if (string.IsNullOrEmpty(data) || !int.TryParse(data, out length))
@@ -517,7 +519,7 @@ namespace FreeInfantryClient.Windows
                 {
                     foreach (string str in settings.GetElements())
                     {
-                        foreach (KeyValuePair<string, string> sect in settings[str])
+                        foreach (KeyValuePair<string, string> sect in settings.sections[str].section)
                         { defaultArray.Add(sect.Key, sect.Value); }
                     }
                 }
@@ -526,21 +528,21 @@ namespace FreeInfantryClient.Windows
                 settings = new IniFile(settingsIni);
                 if (settings.Load())
                 {   //Lets save their credentials incase we need to overwrite the file
-                    if (settings.ContainsKey("Credentials"))
+                    if (settings.sections.ContainsKey("Credentials"))
                     {
-                        if (settings["Credentials"].ContainsKey("Username"))
-                        { user = settings["Credentials"]["Username"]; }
+                        if (settings.sections["Credentials"].section.ContainsKey("Username"))
+                        { user = settings.sections["Credentials"].section["Username"]; }
 
-                        if (settings["Credentials"].ContainsKey("Password"))
-                        { pass = settings["Credentials"]["Password"]; }
+                        if (settings.sections["Credentials"].section.ContainsKey("Password"))
+                        { pass = settings.sections["Credentials"].section["Password"]; }
 
-                        if (settings["Credentials"].ContainsKey("Reminder"))
-                        { remind = settings["Credentials"]["Reminder"]; }
+                        if (settings.sections["Credentials"].section.ContainsKey("Reminder"))
+                        { remind = settings.sections["Credentials"].section["Reminder"]; }
                     }
 
                     foreach (string str in settings.GetElements())
                     {
-                        foreach (KeyValuePair<string, string> sect in settings[str])
+                        foreach (KeyValuePair<string, string> sect in settings.sections[str].section)
                         { settingsArray.Add(sect.Key, sect.Value); }
                     }
                 }
@@ -583,13 +585,13 @@ namespace FreeInfantryClient.Windows
                         if (settings.Load())
                         {
                             if (!string.IsNullOrWhiteSpace(user))
-                            { settings["Credentials"]["Username"] = user; }
+                            { settings.sections["Credentials"].section["Username"] = user; }
 
                             if (!string.IsNullOrWhiteSpace(pass))
-                            { settings["Credentials"]["Password"] = pass; }
+                            { settings.sections["Credentials"].section["Password"] = pass; }
 
                             if (!string.IsNullOrWhiteSpace(remind))
-                            { settings["Credentials"]["Reminder"] = remind; }
+                            { settings.sections["Credentials"].section["Reminder"] = remind; }
                             settings.Save();
                         }
                     }

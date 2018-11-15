@@ -198,6 +198,17 @@ namespace FreeInfantryClient.Windows
                 }
             }
 
+            //Team Message?
+            if (chatSend.Text.StartsWith("'"))
+            {
+                //Trim our prefix
+                string teamMsg = chatSend.Text.TrimStart('\'');
+                //Send it
+                _game.sendChat(teamMsg, "", InfServer.Protocol.Helpers.Chat_Type.Team);
+                chatSend.Clear();
+                return;
+            }
+
 
             //Chat command?
             string command = "";

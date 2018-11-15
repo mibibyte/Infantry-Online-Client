@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using FreeInfantryClient.Windows.Helpers;
 using FreeInfantryClient.Windows.Account.Controllers;
 using FreeInfantryClient.Windows.Account.Protocol;
 

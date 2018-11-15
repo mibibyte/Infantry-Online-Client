@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FreeInfantryClient.Windows.Helpers
+namespace FreeInfantryClient.Settings
 {
-    public class IniSection : Dictionary<string, string>
+    public class IniSection
     {
+        public Dictionary<string, string> section;
+
+        public IniSection()
+        {
+            section = new Dictionary<string, string>();
+        }
         /// <summary>
         /// Auto adds a key within our section
         /// </summary>
@@ -15,7 +21,7 @@ namespace FreeInfantryClient.Windows.Helpers
             int length = line.IndexOf('=');
             if (length == -1)
                 throw new Exception("Keys must have an equal sign.");
-            base.Add(line.Substring(0, length), line.Substring(length + 1, line.Length - length - 1));
+            section.Add(line.Substring(0, length), line.Substring(length + 1, line.Length - length - 1));
         }
 
         /// <summary>
@@ -23,7 +29,7 @@ namespace FreeInfantryClient.Windows.Helpers
         /// </summary>
         public string ToString(string key)
         {
-            return key + "=" + this[key];
+            return key + "=" + section[key];
         }
 
         /// <summary>
@@ -31,9 +37,9 @@ namespace FreeInfantryClient.Windows.Helpers
         /// </summary>
         public string[] GetKeys()
         {
-            string[] strArray = new string[Count];
+            string[] strArray = new string[section.Count];
             byte num = 0;
-            foreach (KeyValuePair<string, string> keyValuePair in this)
+            foreach (KeyValuePair<string, string> keyValuePair in section)
             {
                 strArray[num] = keyValuePair.Key;
                 ++num;
@@ -46,7 +52,7 @@ namespace FreeInfantryClient.Windows.Helpers
         /// </summary>
         public bool HasKey(string key)
         {
-            foreach (KeyValuePair<string, string> keyValuePair in this)
+            foreach (KeyValuePair<string, string> keyValuePair in section)
             {
                 if (keyValuePair.Key == key)
                     return true;
@@ -59,9 +65,9 @@ namespace FreeInfantryClient.Windows.Helpers
         /// </summary>
         public string[] GetValues()
         {
-            string[] strArray = new string[Count];
+            string[] strArray = new string[section.Count];
             byte num = 0;
-            foreach(KeyValuePair<string, string> keyValue in this)
+            foreach(KeyValuePair<string, string> keyValue in section)
             {
                 strArray[num] = keyValue.Value;
                 ++num;

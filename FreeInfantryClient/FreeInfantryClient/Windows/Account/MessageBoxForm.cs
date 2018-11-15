@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace FreeInfantryClient.Windows
+namespace FreeInfantryClient.Windows.Account
 {
     public partial class MessageBoxForm : Form
     {

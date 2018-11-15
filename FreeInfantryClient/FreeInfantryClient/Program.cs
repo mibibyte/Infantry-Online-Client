@@ -23,7 +23,7 @@ namespace FreeInfantryClient
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
-                Windows.Login login = new Windows.Login();
+                Windows.Account.Login login = new Windows.Account.Login();
                 login.BypassDownload = true;
 
                 if (login.Initiate())

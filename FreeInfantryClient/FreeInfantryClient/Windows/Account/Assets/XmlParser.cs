@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
-namespace FreeInfantryClient.Windows.Helpers
+namespace FreeInfantryClient.Windows.Account
 {
     internal class XmlParser
     {

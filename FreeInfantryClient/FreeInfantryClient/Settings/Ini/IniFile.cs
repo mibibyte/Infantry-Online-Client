@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-namespace FreeInfantryClient.Windows.Helpers
+namespace FreeInfantryClient.Settings
 {
-    public class IniFile : Dictionary<string, IniSection>
+    public class IniFile
     {
+        public Dictionary<string, IniSection> sections;
+
         /// <summary>
         /// File name of our ini file
         /// </summary>
@@ -21,7 +23,7 @@ namespace FreeInfantryClient.Windows.Helpers
         public string Get(string element, string section)
         {
             if(HasElement(element) && HasSection(element, section))
-            { return this[element][section]; }
+            { return sections[element].section[section]; }
 
             MessageBox.Show(string.Format("Error: Missing '{0} {1}' in your .ini file.", element, section));
             return string.Empty;
@@ -32,6 +34,7 @@ namespace FreeInfantryClient.Windows.Helpers
         /// </summary>
         public IniFile(string fileName)
         {
+            sections = new Dictionary<string, IniSection>();
             FileName = fileName;
         }
 
@@ -46,7 +49,7 @@ namespace FreeInfantryClient.Windows.Helpers
                 line = line.TrimStart('[');
             if (line.EndsWith("]"))
                 line = line.TrimEnd(']');
-            Add(line, new IniSection());
+            sections.Add(line, new IniSection());
             return line;
         }
 
@@ -70,7 +73,7 @@ namespace FreeInfantryClient.Windows.Helpers
                     {
                         if (index.Length == 0)
                             throw new Exception("Ini file must start with a section.");
-                        this[index].Add(line);
+                        sections[index].Add(line);
                     }
                 }
                 streamReader.Close();
@@ -92,11 +95,11 @@ namespace FreeInfantryClient.Windows.Helpers
             try
             {
                 StreamWriter streamWriter = new StreamWriter(FileName);
-                foreach (string index1 in Keys)
+                foreach (string index1 in sections.Keys)
                 {
                     streamWriter.WriteLine("[" + index1 + "]");
-                    foreach (string index2 in this[index1].Keys)
-                        streamWriter.WriteLine(index2 + "=" + this[index1][index2]);
+                    foreach (string index2 in sections[index1].section.Keys)
+                        streamWriter.WriteLine(index2 + "=" + sections[index1].section[index2]);
                     streamWriter.WriteLine();
                     streamWriter.Flush();
                 }
@@ -115,9 +118,9 @@ namespace FreeInfantryClient.Windows.Helpers
         /// </summary>
         public string[] GetElements()
         {
-            string[] strArray = new string[Count];
+            string[] strArray = new string[sections.Count];
             byte num = 0;
-            foreach (KeyValuePair<string, IniSection> keyValuePair in this)
+            foreach (KeyValuePair<string, IniSection> keyValuePair in sections)
             {
                 strArray[num] = keyValuePair.Key;
                 ++num;
@@ -130,7 +133,7 @@ namespace FreeInfantryClient.Windows.Helpers
         /// </summary>
         public bool HasElement(string section)
         {
-            foreach (KeyValuePair<string, IniSection> keyValuePair in this)
+            foreach (KeyValuePair<string, IniSection> keyValuePair in sections)
             {
                 if (keyValuePair.Key == section)
                     return true;
@@ -146,7 +149,7 @@ namespace FreeInfantryClient.Windows.Helpers
             string[] strArray = null;
 
             if (HasElement(element))
-            { strArray = this[element].GetKeys(); }
+            { strArray = sections[element].GetKeys(); }
 
             return strArray;
         }
@@ -156,7 +159,7 @@ namespace FreeInfantryClient.Windows.Helpers
         /// </summary>
         public bool HasSection(string element, string section)
         {
-            if (HasElement(element) && this[element].ContainsKey(section))
+            if (HasElement(element) && sections[element].section.ContainsKey(section))
             { return true; }
 
             return false;
