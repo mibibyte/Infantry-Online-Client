@@ -11,10 +11,27 @@ namespace FreeInfantryClient.Game.Commands
 {
     public class Chat
     {
+        /// <summary>
+        /// Allows a user to switch arenas
+        /// </summary>
+        public static void go(Player player, Player recipient, string payload, int bong)
+        {
+            player._gameclient.joinArena(payload);
+        }
+
+        /// <summary>
+        /// Displays available arenas to the user
+        /// </summary>
         public static void arena(Player player, Player recipient, string payload, int bong)
         {
+        }
 
-            player._gameclient.joinArena(payload);
+        /// <summary>
+        /// Displays available arenas to the user
+        /// </summary>
+        public static void quit(Player player, Player recipient, string payload, int bong)
+        {
+            player._gameclient.quit();
         }
 
         /// <summary>
@@ -40,7 +57,7 @@ namespace FreeInfantryClient.Game.Commands
 
             if (!player._gameclient._commandRegistrar._chatCommands.TryGetValue(payload.ToLower(), out handler))
             {
-                player._gameclient._wGame.updateChat("Unable to find the specified command.", "System", 
+                player._gameclient._wGame.updateChat("Unable to find the specified command.", "System",
                     InfServer.Protocol.Helpers.Chat_Type.System, "");
                 return;
             }
@@ -61,13 +78,21 @@ namespace FreeInfantryClient.Game.Commands
         [Commands.RegistryFunc(HandlerType.ChatCommand)]
         public static IEnumerable<Commands.HandlerDescriptor> Register()
         {
+            yield return new HandlerDescriptor(go, "go",
+                "Switches a users current arena",
+                "?go or ?go new arena", true);
+
+            yield return new HandlerDescriptor(quit, "quit",
+                "Leaves the current zone and brings the user back to the zonelist",
+                "?quit", false);
+
             yield return new HandlerDescriptor(arena, "arena",
-                "Displays all arenas availble to join",
-                "?arena");
+                "Displays a list of available arenas",
+                "?arena", true);
 
             yield return new HandlerDescriptor(help, "help",
                 "Gives the user help information on a given command.",
-                "?help [commandName]");
+                "?help [commandName]", false);
         }
         #endregion
     }

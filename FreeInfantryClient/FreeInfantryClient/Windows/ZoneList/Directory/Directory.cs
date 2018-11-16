@@ -21,6 +21,7 @@ namespace FreeInfantryClient.Windows.ZoneList.Directory
             _frmZoneList._zones.Add(new Zone("[I:League] USL EC Apollo", "108.61.133.122", 8124));
             _frmZoneList._zones.Add(new Zone("[I: League] USL Apollo Map","108.61.133.122",7202));
             _frmZoneList._zones.Add(new Zone("[I:Arcade] Zombie Zone", "108.61.133.122", 1012));
+            _frmZoneList._zones.Add(new Zone("Localhost [port=2626]", "127.0.0.1", 2626));
         }
     }
 }

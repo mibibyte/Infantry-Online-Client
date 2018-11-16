@@ -19,6 +19,8 @@ namespace FreeInfantryClient.Windows
     public partial class Game : Form
     {
         static GameClient _game;
+        private string _ticketid;
+        private string _alias;
 
         public static void onException(object o, UnhandledExceptionEventArgs e)
         {	//Talk about the exception
@@ -30,9 +32,12 @@ namespace FreeInfantryClient.Windows
         {
             InitializeComponent();
 
+            _ticketid = ticketid;
+            _alias = alias;
+
             InfServer.Log.init();
-            InfServer.DdMonitor.bNoSync = true;
-            InfServer.DdMonitor.bEnabled = true;
+            InfServer.DdMonitor.bNoSync = false;
+            InfServer.DdMonitor.bEnabled = false;
             InfServer.DdMonitor.DefaultTimeout = 2000;
 
             //Register our catch-all exception handler
@@ -42,13 +47,8 @@ namespace FreeInfantryClient.Windows
             InfServer.LogClient handlerLogger = InfServer.Log.createClient("ClientHandler");
             InfServer.Log.assume(handlerLogger);
 
-            //Allow functions to pre-register
-            InfServer.Logic.Registrar.register();
-
             //Create our client
             _game = new GameClient(this, alias, ticketid);
-
-            //Initialize everything..
 
             //Connect
             _game.connect(serverLoc);
@@ -60,11 +60,13 @@ namespace FreeInfantryClient.Windows
             //Lazy way of doing this...
             lstPlayers.Items.Clear();
 
-            foreach (KeyValuePair<ushort, Player> player in players)
-                lstPlayers.Items.Add(player.Value._alias);
+            var sorted = players.OrderBy(x => x.Value._team == "spec" ? 0 : 1)
+            .ThenBy(x => x.Value._team);
 
-
-            lstPlayers.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            foreach (KeyValuePair<ushort, Player> player in sorted)
+            {
+                lstPlayers.Items.Add(String.Format("{0} ({1})", player.Value._alias, player.Value._team));
+            }
         }
 
         //Updates our visual chat log
@@ -224,13 +226,29 @@ namespace FreeInfantryClient.Windows
                     command = chatSend.Text.Substring(1, spcIdx - 1);
                     payload = chatSend.Text.Substring(spcIdx + 1);
                 }
+                FreeInfantryClient.Game.Commands.HandlerDescriptor handler;
 
-                //Handle it!
-                _game.playerChatCommand(_game._player, null, command, payload, 0);
+                if (_game._commandRegistrar._chatCommands.ContainsKey(command))
+                {
+                     handler = _game._commandRegistrar._chatCommands[command];
+
+                    //Handle it!
+                    _game.playerChatCommand(_game._player, null, command, payload, 0);
+
+                    //Should we pass it along to the server?
+                    if (!handler.relay)
+                    {
+                        //Clear our message box
+                        chatSend.Clear();
+                        return;
+                    }
+                }
+
+   
 
             }
-            //Redo this later, maybe flags for specific commands that are not to be passed to the server
-            if (command != "help")
+            //Relay it to the server
+            if (_game.IsConnected)
                 _game.sendChat(chatSend.Text, "", InfServer.Protocol.Helpers.Chat_Type.Normal);
 
             //Clear our message box
@@ -251,6 +269,64 @@ namespace FreeInfantryClient.Windows
 
             }
         }
+
+        private void Game_Move(object sender, EventArgs e)
+        {
+            foreach (Control control in this.Controls)
+            {
+                if (control.Name.StartsWith("dialog"))
+                {
+                    control.Left = (this.ClientSize.Width - control.Width) / 2;
+                    control.Top = (this.ClientSize.Height - control.Height) / 2;
+                }
+            }
+        }
+
+        private void Game_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+                MinimizeAllChildForms(this);
+        }
+
+        public void MinimizeAllChildForms(Form parent)
+        {
+            foreach (Form f in parent.OwnedForms)
+            {
+                f.WindowState = FormWindowState.Minimized;
+                MinimizeAllChildForms(f);
+            }
+        }
+
+        private void Game_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _game = null;
+        }
+
+        #region Form Effects
+        public async void FadeIn(int interval = 80)
+        {
+            //Object is not fully invisible. Fade it in
+            while (this.Opacity < 1.0)
+            {
+                await Task.Delay(interval);
+                this.Opacity += 0.05;
+            }
+            this.Opacity = 1; //make fully visible       
+        }
+
+        public async void FadeOut(int interval = 80)
+        {
+            //Object is fully visible. Fade it out
+            while (this.Opacity > 0.0)
+            {
+                await Task.Delay(interval);
+                this.Opacity -= 0.05;
+            }
+            this.Opacity = 0; //make fully invisible
+            this.Close();
+            this.Dispose();
+        }
+        #endregion
     }
 }
        

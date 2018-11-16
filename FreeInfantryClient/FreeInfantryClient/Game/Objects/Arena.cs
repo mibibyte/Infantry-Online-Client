@@ -25,6 +25,7 @@ namespace FreeInfantryClient.Game
         public string _name;
         public int _id;
         private Dictionary<ushort, Player> _players;		//The players in our arena, indexed by id
+        public int _playerCount = 0;
 
 
         public Arena(GameClient game)
@@ -48,6 +49,7 @@ namespace FreeInfantryClient.Game
             Player player = new Player();
             player._alias = pkt.singlePlayer._alias;
             player._id = pkt.singlePlayer._id;
+            player._team = pkt.singlePlayer._team;
 
             //Update our dictionary
             _players.Add(player._id, player);

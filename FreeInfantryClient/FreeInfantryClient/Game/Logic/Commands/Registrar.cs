@@ -149,14 +149,16 @@ namespace FreeInfantryClient.Game.Commands
         public string handlerCommand;
         public string commandDescription;
         public string usage;
+        public bool relay;
 
 
-        public HandlerDescriptor(Action<Player, Player, string, int> _handler, string _handlerCommand, string _commandDescription, string _usage)
+        public HandlerDescriptor(Action<Player, Player, string, int> _handler, string _handlerCommand, string _commandDescription, string _usage, bool _relay)
         {
             handler = _handler;
             handlerCommand = _handlerCommand;
             commandDescription = _commandDescription;
             usage = _usage;
+            relay = _relay;
         }
     }
 

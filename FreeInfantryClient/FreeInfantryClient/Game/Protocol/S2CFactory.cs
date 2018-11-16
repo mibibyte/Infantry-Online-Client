@@ -185,6 +185,10 @@ namespace FreeInfantryClient.Game.Protocol
                     packet = new SC_PlayerLeave(typeID, buffer, offset, size);
                     break;
 
+                case SC_ArenaList.TypeID:
+                    packet = new SC_ArenaList(typeID, buffer, offset, size);
+                    break;
+
 
                 default:
                     //An undefined packet.

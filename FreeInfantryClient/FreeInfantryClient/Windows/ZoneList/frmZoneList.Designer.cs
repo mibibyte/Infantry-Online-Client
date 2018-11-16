@@ -86,7 +86,6 @@
             this.alias.Name = "alias";
             this.alias.Size = new System.Drawing.Size(147, 20);
             this.alias.TabIndex = 0;
-            this.alias.TextChanged += new System.EventHandler(this.alias_TextChanged);
             // 
             // groupBox2
             // 

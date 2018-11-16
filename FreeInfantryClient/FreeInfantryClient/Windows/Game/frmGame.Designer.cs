@@ -1,6 +1,6 @@
 ﻿namespace FreeInfantryClient.Windows
 {
-    partial class Game
+    public partial class Game
     {
         /// <summary>
         /// Required designer variable.
@@ -34,15 +34,17 @@
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.chatSend = new System.Windows.Forms.TextBox();
             this.chatLog = new System.Windows.Forms.RichTextBox();
-            this.lstPlayers = new System.Windows.Forms.ListView();
+            this.lstPlayers = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // btnSend
             // 
+            this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSend.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnSend.Location = new System.Drawing.Point(816, 493);
+            this.btnSend.Location = new System.Drawing.Point(917, 511);
+            this.btnSend.Margin = new System.Windows.Forms.Padding(0);
             this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(146, 33);
+            this.btnSend.Size = new System.Drawing.Size(48, 27);
             this.btnSend.TabIndex = 2;
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = true;
@@ -67,40 +69,45 @@
             // 
             // chatSend
             // 
+            this.chatSend.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.chatSend.BackColor = System.Drawing.SystemColors.WindowFrame;
             this.chatSend.ForeColor = System.Drawing.Color.Aquamarine;
-            this.chatSend.Location = new System.Drawing.Point(12, 493);
+            this.chatSend.Location = new System.Drawing.Point(12, 511);
             this.chatSend.Multiline = true;
             this.chatSend.Name = "chatSend";
-            this.chatSend.Size = new System.Drawing.Size(798, 33);
+            this.chatSend.Size = new System.Drawing.Size(902, 27);
             this.chatSend.TabIndex = 4;
             this.chatSend.KeyUp += new System.Windows.Forms.KeyEventHandler(this.chatSend_KeyUp);
             // 
             // chatLog
             // 
+            this.chatLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.chatLog.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.chatLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.chatLog.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.chatLog.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.chatLog.Location = new System.Drawing.Point(12, 32);
+            this.chatLog.Location = new System.Drawing.Point(12, 33);
             this.chatLog.Name = "chatLog";
             this.chatLog.ReadOnly = true;
-            this.chatLog.Size = new System.Drawing.Size(798, 457);
+            this.chatLog.Size = new System.Drawing.Size(820, 472);
             this.chatLog.TabIndex = 5;
             this.chatLog.Text = "";
             // 
             // lstPlayers
             // 
+            this.lstPlayers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstPlayers.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.lstPlayers.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lstPlayers.ForeColor = System.Drawing.Color.DarkOrange;
-            this.lstPlayers.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.lstPlayers.HideSelection = false;
-            this.lstPlayers.Location = new System.Drawing.Point(816, 32);
+            this.lstPlayers.ForeColor = System.Drawing.Color.Gold;
+            this.lstPlayers.FormattingEnabled = true;
+            this.lstPlayers.Location = new System.Drawing.Point(838, 33);
+            this.lstPlayers.Margin = new System.Windows.Forms.Padding(0);
             this.lstPlayers.Name = "lstPlayers";
-            this.lstPlayers.Size = new System.Drawing.Size(145, 456);
-            this.lstPlayers.TabIndex = 6;
-            this.lstPlayers.UseCompatibleStateImageBehavior = false;
-            this.lstPlayers.View = System.Windows.Forms.View.List;
+            this.lstPlayers.Size = new System.Drawing.Size(127, 472);
+            this.lstPlayers.TabIndex = 8;
             // 
             // Game
             // 
@@ -116,12 +123,14 @@
             this.Controls.Add(this.menuStrip1);
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
-            this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Game";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Infantry Online";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Game_FormClosing);
             this.Load += new System.EventHandler(this.Game_Load);
+            this.Move += new System.EventHandler(this.Game_Move);
+            this.Resize += new System.EventHandler(this.Game_Resize);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -134,6 +143,8 @@
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
         private System.Windows.Forms.TextBox chatSend;
         private System.Windows.Forms.RichTextBox chatLog;
-        private System.Windows.Forms.ListView lstPlayers;
+        private System.Windows.Forms.ListBox lstPlayers;
+
+
     }
 }

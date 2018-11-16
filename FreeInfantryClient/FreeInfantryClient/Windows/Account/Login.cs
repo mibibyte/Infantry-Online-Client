@@ -68,46 +68,22 @@ namespace FreeInfantryClient.Windows.Account
         /// <returns>Returns true if successful</returns>
         public bool Initiate()
         {
-            string settingsIni = (Path.Combine(currentDirectory, "settings.ini"));
-            string defaultIni = (Path.Combine(currentDirectory, "default.ini"));
-            if (File.Exists(settingsIni))
-            {   //Do a quick ini comparison to see if there hasn't been an ini update
-                IniCompare();
 
-                settings = new IniFile(settingsIni);
-                if (!settings.Load())
-                { return false; }
-
-                settings.sections["Launcher"].section["Version"] = Application.ProductVersion;
-                WinRegistry.WriteAddressKeys(settings.Get("Launcher","Directory1"), settings.Get("Launcher","Directory2"));
-                settings.Save();
-                return true;
-            }
-
-            if (File.Exists(defaultIni))
+            if (!GameSettings.Initiate())
             {
-                try
-                { File.Copy("default.ini", "settings.ini", false); }
-                catch(Exception e)
-                { MessageBox.Show(e.ToString()); }
-
-                settings = new IniFile(settingsIni);
-                if (!settings.Load())
-                { return false; }
-
-                settings.sections["Launcher"].section["Version"] = Application.ProductVersion;
-                WinRegistry.WriteAddressKeys(settings.Get("Launcher", "Directory1"), settings.Get("Launcher", "Directory2"));
-                settings.Save();
-                return true;
+                MessageBoxForm msgBox = new MessageBoxForm();
+                msgBox.Write("Error while Initiating Launcher",
+                    "Could not find your settings files.\r\nPlease make sure you installed the Infantry Launcher\r\nfrom our website below.");
+                msgBox.ShowLinkLabel(GetWebsite());
+                msgBox.ShowDialog();
+                return false;
             }
 
-            MessageBoxForm msgBox = new MessageBoxForm();
-            msgBox.Write("Error while Initiating Launcher",
-                "Could not find your settings files.\r\nPlease make sure you installed the Infantry Launcher\r\nfrom our website below.");
-            msgBox.ShowLinkLabel(GetWebsite());
-            msgBox.ShowDialog();
+            //Populate all of our stored variables
+            GameSettings.Populate();
 
-            return false;
+            LoadUserSettings();
+            return true;
         }
 
         /// <summary>
@@ -130,8 +106,6 @@ namespace FreeInfantryClient.Windows.Account
                 catch //If they still dont exist just continue
                 { }
             }
-
-            LoadUserSettings();
             AcceptButton = PlayButton;
         }
 
@@ -171,14 +145,13 @@ namespace FreeInfantryClient.Windows.Account
         private void PswdHint_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             //When clicked, allows you to change your password reminder
-            string reminder = settings.Get("Credentials","Reminder");
+            string reminder = GameSettings.Credentials._reminder;
             using (var form = new ReminderForm(reminder))
             {
                 var result = form.ShowDialog();
                 if (result == DialogResult.OK)
                 {
-                    settings.sections["Credentials"].section["Reminder"] = form.Reminder;
-                    settings.Save();
+                    GameSettings.Credentials._reminder = form.Reminder; 
                 }
             }
         }
@@ -205,10 +178,10 @@ namespace FreeInfantryClient.Windows.Account
             { return; }
 
             if (string.IsNullOrEmpty(UsernameBox.Text) && string.IsNullOrEmpty(PasswordBox.Text))
-            { new RegisterForm(settings).ShowDialog(); }
+            { new RegisterForm().ShowDialog(); }
             else
             {   //Lets autofill first
-                RegisterForm regForm = new RegisterForm(settings);
+                RegisterForm regForm = new RegisterForm();
                 regForm.AutoFill(UsernameBox.Text, PasswordBox.Text);
                 regForm.ShowDialog();
             }
@@ -233,7 +206,7 @@ namespace FreeInfantryClient.Windows.Account
             }
 
             //Try loading first
-            string pswd = settings.Get("Credentials", "Password");
+            string pswd = GameSettings.Credentials._password;
 
             //Did the text change at all?
             if (pswdTextChanged == true)
@@ -246,18 +219,19 @@ namespace FreeInfantryClient.Windows.Account
                 case CheckState.Checked:
                     //Was the text changed? We don't overwrite till neccessary
                     if (pswdTextChanged == true)
-                    { settings.sections["Credentials"].section["Password"] = Md5.Hash(PasswordBox.Text.Trim()); }
-                    WinRegistry.WriteAddressKey("PasswordLength", "Launcher", PasswordBox.Text.Length.ToString());
+                    { GameSettings.Credentials._password = Md5.Hash(PasswordBox.Text.Trim()); }
+                    GameSettings.Credentials._passwordLength = PasswordBox.Text.Length.ToString();
+                    GameSettings.Save();
                     break;
 
                 case CheckState.Unchecked:
-                    settings.sections["Credentials"].section["Password"] = string.Empty;
-                    WinRegistry.DeleteValue("PasswordLength", "Launcher");
+                    GameSettings.Credentials._password = string.Empty;
+                    GameSettings.Credentials._passwordLength = string.Empty;
+                    GameSettings.Save();
                     break;
             }
 
-            settings.sections["Credentials"].section["Username"] = UsernameBox.Text.Trim();
-            settings.Save();
+            GameSettings.Credentials._username = UsernameBox.Text.Trim();
 
             //Get our ticket id
             UpdateStatusMsg("Trying Credentials...");
@@ -308,8 +282,11 @@ namespace FreeInfantryClient.Windows.Account
 
         private void LoadUserSettings()
         {
-            string user = settings.Get("Credentials","Username");
-            string pswd = settings.Get("Credentials","Password");
+
+
+            string user = GameSettings.Credentials._username;
+            string pswd = GameSettings.Credentials._password;
+
 
             UsernameBox.Select(); //Activate it
 
@@ -319,7 +296,7 @@ namespace FreeInfantryClient.Windows.Account
 
             if (pswd.Length <= 0)
             { return; }
-            string data = WinRegistry.GetKeyData("PasswordLength", "Launcher");
+            string data = GameSettings.Credentials._passwordLength;
             string test = string.Empty;
             int length;
             if (string.IsNullOrEmpty(data) || !int.TryParse(data, out length))
@@ -340,10 +317,10 @@ namespace FreeInfantryClient.Windows.Account
         {
             UpdateStatusMsg("Checking Server Status...");
 
-            string url = settings.Get("Launcher","Accounts");
+            string url = GameSettings.Launcher._accounts;
             if (!AccountController.PingServer(url))
             {
-                url = settings.Get("Launcher","AccountsBackup");
+                url = GameSettings.Launcher._accountsBackup;
 
                 //First time failed, try backup
                 if (!AccountController.PingServer(url))
@@ -380,8 +357,8 @@ namespace FreeInfantryClient.Windows.Account
             AssetDownloadController.SetForm(this);
             try
             {
-                string version = settings.Get("Launcher","Version");
-                string versionUrl = new System.Net.WebClient().DownloadString(settings.Get("Launcher","VersionUrl"));
+                string version = GameSettings.Launcher._version;
+                string versionUrl = new System.Net.WebClient().DownloadString(GameSettings.Launcher._versionURL);
                 if (!string.IsNullOrWhiteSpace(versionUrl.Trim()) && !version.Equals(versionUrl.Trim(), StringComparison.Ordinal))
                 { //Strings dont match, check for greater than by parsing into int
                     if (VersionCheck(version, versionUrl))
@@ -389,7 +366,7 @@ namespace FreeInfantryClient.Windows.Account
                     else
                     {
                         AssetDownloadController.OnUpdateLauncher += UpdateLauncher;
-                        AssetDownloadController.DownloadAssets(settings.Get("Launcher", "LauncherAssets"), settings.Get("Launcher", "LauncherAssetsList"));
+                        AssetDownloadController.DownloadAssets(GameSettings.Launcher._launcherAssets, GameSettings.Launcher._launcherAssetList);
                         return;
                     }
                 }
@@ -420,8 +397,8 @@ namespace FreeInfantryClient.Windows.Account
             if (File.Exists(Path.Combine(currentDirectory, "Patcher.exe")))
             {
                 //See if we can even find the link to update
-                string Location = settings.Get("Launcher", "LauncherAssets");
-                string List = settings.Get("Launcher", "LauncherAssetsList");
+                string Location = GameSettings.Launcher._launcherAssets;
+                string List = GameSettings.Launcher._launcherAssetList;
                 if (!string.IsNullOrEmpty(Location) && !string.IsNullOrEmpty(List))
                 {
                     Process updater = new Process();
@@ -447,7 +424,7 @@ namespace FreeInfantryClient.Windows.Account
             try
             {
                 AssetDownloadController.OnUpdateFiles += UpdateComplete;
-                AssetDownloadController.DownloadAssets(settings.Get("Launcher", "Assets"), settings.Get("Launcher", "AssetsList"));
+                AssetDownloadController.DownloadAssets(GameSettings.Launcher._assets, GameSettings.Launcher._assetsList);
             }
             catch
             {
@@ -499,132 +476,26 @@ namespace FreeInfantryClient.Windows.Account
             return false;
         }
 
-        /// <summary>
-        /// Parses through each INI file checking for matches and if needed, fixes them
-        /// </summary>
-        private void IniCompare()
-        {
-            string settingsIni = (Path.Combine(currentDirectory, "settings.ini"));
-            string defaultIni = (Path.Combine(currentDirectory, "default.ini"));
-
-            if (File.Exists(defaultIni))
-            {
-                Dictionary<string, string> settingsArray = new Dictionary<string, string>();
-                Dictionary<string, string> defaultArray = new Dictionary<string, string>();
-                string user = null, pass = null, remind = null;
-
-                //First, lets load our default.ini and grab our data
-                settings = new IniFile(defaultIni);
-                if (settings.Load())
-                {
-                    foreach (string str in settings.GetElements())
-                    {
-                        foreach (KeyValuePair<string, string> sect in settings.sections[str].section)
-                        { defaultArray.Add(sect.Key, sect.Value); }
-                    }
-                }
-
-                //Secondly, lets load our settings.ini to try matching it
-                settings = new IniFile(settingsIni);
-                if (settings.Load())
-                {   //Lets save their credentials incase we need to overwrite the file
-                    if (settings.sections.ContainsKey("Credentials"))
-                    {
-                        if (settings.sections["Credentials"].section.ContainsKey("Username"))
-                        { user = settings.sections["Credentials"].section["Username"]; }
-
-                        if (settings.sections["Credentials"].section.ContainsKey("Password"))
-                        { pass = settings.sections["Credentials"].section["Password"]; }
-
-                        if (settings.sections["Credentials"].section.ContainsKey("Reminder"))
-                        { remind = settings.sections["Credentials"].section["Reminder"]; }
-                    }
-
-                    foreach (string str in settings.GetElements())
-                    {
-                        foreach (KeyValuePair<string, string> sect in settings.sections[str].section)
-                        { settingsArray.Add(sect.Key, sect.Value); }
-                    }
-                }
-                //Now lets see if they match
-                if (settingsArray.Count > 0 && defaultArray.Count > 0)
-                {
-                    bool overwrite = false;
-                    foreach (KeyValuePair<string, string> kvp in defaultArray)
-                    {
-                        if (!settingsArray.ContainsKey(kvp.Key))
-                        { overwrite = true; }
-
-                        if (settingsArray.ContainsKey(kvp.Key) && !settingsArray[kvp.Key].Equals(kvp.Value, StringComparison.OrdinalIgnoreCase))
-                        {
-                            //We dont want their login info
-                            if (kvp.Key.Equals("Username") || kvp.Key.Equals("Password") || kvp.Key.Equals("Reminder"))
-                            { continue; }
-
-                            //If this is a version, check it
-                            if (kvp.Key.Equals("Version") && VersionCheck(settingsArray[kvp.Key], kvp.Value))
-                            { continue; }
-                            overwrite = true;
-                        }
-                    }
-
-                    //Are we missing Keys?
-                    if (overwrite)
-                    {
-                        try
-                        {
-                            //Copy over it
-                            File.SetAttributes(Path.Combine(currentDirectory, "settings.ini"), FileAttributes.Normal);
-                            File.Copy("default.ini", "settings.ini", true);
-                        }
-                        catch (Exception e)
-                        { MessageBox.Show(e.ToString()); }
-
-                        //Lets reload, save their info then be on our way
-                        settings = new IniFile(settingsIni);
-                        if (settings.Load())
-                        {
-                            if (!string.IsNullOrWhiteSpace(user))
-                            { settings.sections["Credentials"].section["Username"] = user; }
-
-                            if (!string.IsNullOrWhiteSpace(pass))
-                            { settings.sections["Credentials"].section["Password"] = pass; }
-
-                            if (!string.IsNullOrWhiteSpace(remind))
-                            { settings.sections["Credentials"].section["Reminder"] = remind; }
-                            settings.Save();
-                        }
-                    }
-                }
-            }
-
-            return;
-        }
+       
 
         private string GetWebsite()
         {
             string defaultLink = @"http://freeinfantry.com/";
-            if (settings == null)
-            { return defaultLink; }
-            string website = settings.Get("Launcher", "Website");
+            string website = GameSettings.Launcher._website;
             return !string.IsNullOrWhiteSpace(website) ? website : defaultLink;
         }
 
         private string GetDonate()
         {
             string defaultLink = @"http://freeinfantry.com/";
-            if (settings == null)
-            { return defaultLink; }
-            string donate = settings.Get("Launcher", "DonateLink");
+            string donate = GameSettings.Launcher._donate;
             return !string.IsNullOrWhiteSpace(donate) ? donate : defaultLink;
         }
 
         private string GetDiscord()
         {
             string defaultLink = @"https://discord.gg/2avPSyv";
-            if (settings == null)
-            { return defaultLink; }
-            string discord = settings.Get("Launcher", "DiscordLink");
+            string discord = GameSettings.Launcher._discord;
             return !string.IsNullOrWhiteSpace(discord) ? discord : defaultLink;
         }
 
@@ -637,7 +508,7 @@ namespace FreeInfantryClient.Windows.Account
             PswdHint.Visible = true;
 
             //Get our reminder
-            string reminder = settings.Get("Credentials", "Reminder");
+            string reminder = GameSettings.Credentials._reminder;
             if (!string.IsNullOrWhiteSpace(reminder))
             {
                 PswdHint.LinkBehavior = LinkBehavior.NeverUnderline;
@@ -705,8 +576,6 @@ namespace FreeInfantryClient.Windows.Account
         }
 
         #endregion
-
-        private IniFile settings;
         private string currentDirectory;
         private Image imgBtnOff;
         private Image imgBtnOn;

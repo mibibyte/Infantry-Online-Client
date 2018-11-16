@@ -25,10 +25,9 @@ namespace FreeInfantryClient.Windows.Account
             { EmailBox.Select(); }
         }
 
-        public RegisterForm(IniFile Settings)
+        public RegisterForm()
         {
             InitializeComponent();
-            settings = Settings;
 
             //Activate our box control
             UsernameBox.Select();
@@ -67,8 +66,7 @@ namespace FreeInfantryClient.Windows.Account
                 { return; }
             }
 
-            settings.sections["Credentials"].section["Reminder"] = string.IsNullOrWhiteSpace(ReminderBox.Text) ? string.Empty : ReminderBox.Text;
-            settings.Save();
+            GameSettings.Credentials._reminder = string.IsNullOrWhiteSpace(ReminderBox.Text) ? string.Empty : ReminderBox.Text;
 
             Cursor.Current = Cursors.WaitCursor;
             if (!AccountController.RegisterAccount(UsernameBox.Text.Trim(), PasswordBox.Text.Trim(), EmailBox.Text.Trim()))

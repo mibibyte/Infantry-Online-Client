@@ -29,11 +29,16 @@ namespace FreeInfantryClient.Windows
             _directory = new ZoneList.Directory.Directory(this);
             _ticketid = ticketid;
 
+            //Allow functions to pre-register
+            InfServer.Logic.Registrar.register();
+
             InitializeComponent();
         }
 
         private void frmZoneList_Load(object sender, EventArgs e)
         {
+            alias.Text = Settings.GameSettings.Credentials._alias;
+
             foreach (Zone zone in _zones)
             {
                 listZones.Items.Add(zone._name);
@@ -48,8 +53,12 @@ namespace FreeInfantryClient.Windows
 
         private void btnPlay_Click(object sender, EventArgs e)
         {
-            Zone zone = null;
+            if (!string.IsNullOrWhiteSpace(alias.Text))
+            {
+                Settings.GameSettings.Credentials._alias = alias.Text;
+            }
 
+            Zone zone = null;
             zone = _zones.FirstOrDefault(z => z._name == listZones.SelectedItem.ToString());
 
             if (zone != null)
@@ -57,13 +66,9 @@ namespace FreeInfantryClient.Windows
                 Game game = new Game(zone._endpoint, _ticketid, alias.Text);
                 this.Hide();
                 game.ShowDialog();
-                this.Close();
+                this.Show();
             }
             
-        }
-
-        private void alias_TextChanged(object sender, EventArgs e)
-        {
         }
     }
 }

@@ -19,7 +19,6 @@ namespace FreeInfantryClient.Game
 {
     public partial class GameClient : IClient
     {
-        public Windows.Windows _windows;
         public InfServer.LogClient _logger;      //Our log client for database related activities
         public Windows.Game _wGame;              //Our game form
         public Player _player;                   //Our player instance
@@ -44,7 +43,7 @@ namespace FreeInfantryClient.Game
             _player._alias = alias;
 
             //Log packets for now..
-            _conn._bLogPackets = false;
+            _conn._bLogPackets = true;
 
             _logger = InfServer.Log.createClient("Client");
             _conn._logger = _logger;
@@ -54,6 +53,19 @@ namespace FreeInfantryClient.Game
             _commandRegistrar = new FreeInfantryClient.Game.Commands.Registrar();
             _commandRegistrar.register();
         }
+
+        public void quit()
+        {
+            //Send our disconnect signal
+            disconnect();
+
+            //Close our game form.
+            _wGame.FadeOut(80);
+
+
+        }
+
+
 
         #region Connection
         /// <summary>
@@ -71,9 +83,11 @@ namespace FreeInfantryClient.Game
 
             //Send our initial packet
             CS_Initial init = new CS_Initial();
+            int connectionID = new Random().Next();
+            init.connectionID = connectionID;
+            _conn._client._connectionID = connectionID;
+            _connectionID = connectionID;
 
-            //Generate a connection ID.
-            _conn._client._connectionID = init.connectionID = _connectionID = new Random().Next();
             init.CRCLength = 0;
             init.udpMaxPacket = 496;
 
@@ -100,10 +114,14 @@ namespace FreeInfantryClient.Game
         }
 
         /// <summary>
-        /// Disconnects our current session with the database server
+        /// Disconnects our current session with the server
         /// </summary>
         public void disconnect()
         {
+            CS_Disconnect discon = new CS_Disconnect();
+            discon.connectionID = _conn._client._connectionID;
+            discon.reason = CS_Disconnect.DisconnectReason.DisconnectReasonApplication;
+            _conn._client.send(discon);
             _conn._client.destroy();
         }
 
@@ -112,7 +130,8 @@ namespace FreeInfantryClient.Game
         /// </summary>
         public void destroy()
         {
-
+            _conn._logger.close();
+            _conn._client._bDestroyed = true;
         }
 
         /// <summary>

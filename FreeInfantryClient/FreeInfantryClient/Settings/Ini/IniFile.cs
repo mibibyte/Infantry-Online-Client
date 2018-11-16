@@ -23,7 +23,7 @@ namespace FreeInfantryClient.Settings
         public string Get(string element, string section)
         {
             if(HasElement(element) && HasSection(element, section))
-            { return sections[element].section[section]; }
+            { return sections[element].setting[section]; }
 
             MessageBox.Show(string.Format("Error: Missing '{0} {1}' in your .ini file.", element, section));
             return string.Empty;
@@ -98,8 +98,8 @@ namespace FreeInfantryClient.Settings
                 foreach (string index1 in sections.Keys)
                 {
                     streamWriter.WriteLine("[" + index1 + "]");
-                    foreach (string index2 in sections[index1].section.Keys)
-                        streamWriter.WriteLine(index2 + "=" + sections[index1].section[index2]);
+                    foreach (string index2 in sections[index1].setting.Keys)
+                        streamWriter.WriteLine(index2 + "=" + sections[index1].setting[index2]);
                     streamWriter.WriteLine();
                     streamWriter.Flush();
                 }
@@ -159,7 +159,7 @@ namespace FreeInfantryClient.Settings
         /// </summary>
         public bool HasSection(string element, string section)
         {
-            if (HasElement(element) && sections[element].section.ContainsKey(section))
+            if (HasElement(element) && sections[element].setting.ContainsKey(section))
             { return true; }
 
             return false;

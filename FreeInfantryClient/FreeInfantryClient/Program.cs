@@ -29,6 +29,7 @@ namespace FreeInfantryClient
                 if (login.Initiate())
                 {
                     Application.Run(login);
+                    AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
                 }
                 else
                 {
@@ -38,6 +39,12 @@ namespace FreeInfantryClient
 
             }
         }
+
+        static void OnProcessExit(object sender, EventArgs e)
+        {
+            FreeInfantryClient.Settings.GameSettings.Save();
+        }
+
         private static void ConsoleMain()
         {
 

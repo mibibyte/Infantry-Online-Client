@@ -5,11 +5,11 @@ namespace FreeInfantryClient.Settings
 {
     public class IniSection
     {
-        public Dictionary<string, string> section;
+        public Dictionary<string, string> setting;
 
         public IniSection()
         {
-            section = new Dictionary<string, string>();
+            setting = new Dictionary<string, string>();
         }
         /// <summary>
         /// Auto adds a key within our section
@@ -21,7 +21,7 @@ namespace FreeInfantryClient.Settings
             int length = line.IndexOf('=');
             if (length == -1)
                 throw new Exception("Keys must have an equal sign.");
-            section.Add(line.Substring(0, length), line.Substring(length + 1, line.Length - length - 1));
+            setting.Add(line.Substring(0, length), line.Substring(length + 1, line.Length - length - 1));
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace FreeInfantryClient.Settings
         /// </summary>
         public string ToString(string key)
         {
-            return key + "=" + section[key];
+            return key + "=" + setting[key];
         }
 
         /// <summary>
@@ -37,9 +37,9 @@ namespace FreeInfantryClient.Settings
         /// </summary>
         public string[] GetKeys()
         {
-            string[] strArray = new string[section.Count];
+            string[] strArray = new string[setting.Count];
             byte num = 0;
-            foreach (KeyValuePair<string, string> keyValuePair in section)
+            foreach (KeyValuePair<string, string> keyValuePair in setting)
             {
                 strArray[num] = keyValuePair.Key;
                 ++num;
@@ -52,7 +52,7 @@ namespace FreeInfantryClient.Settings
         /// </summary>
         public bool HasKey(string key)
         {
-            foreach (KeyValuePair<string, string> keyValuePair in section)
+            foreach (KeyValuePair<string, string> keyValuePair in setting)
             {
                 if (keyValuePair.Key == key)
                     return true;
@@ -65,9 +65,9 @@ namespace FreeInfantryClient.Settings
         /// </summary>
         public string[] GetValues()
         {
-            string[] strArray = new string[section.Count];
+            string[] strArray = new string[setting.Count];
             byte num = 0;
-            foreach(KeyValuePair<string, string> keyValue in section)
+            foreach(KeyValuePair<string, string> keyValue in setting)
             {
                 strArray[num] = keyValue.Value;
                 ++num;
