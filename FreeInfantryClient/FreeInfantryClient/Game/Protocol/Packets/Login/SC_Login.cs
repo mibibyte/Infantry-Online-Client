@@ -77,7 +77,7 @@ namespace InfServer.Protocol
         {
             result = (Login_Result)_contentReader.ReadByte();
             serverVersion = _contentReader.ReadUInt16();
-            zoneConfig = ReadNullString();
+            zoneConfig = ReadString(24);
             popupMessage = ReadNullString();
         }
 

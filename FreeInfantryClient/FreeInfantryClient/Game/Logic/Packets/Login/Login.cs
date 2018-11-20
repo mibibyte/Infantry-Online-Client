@@ -61,11 +61,8 @@ namespace FreeInfantryClient.Game.Logic
         static public void Handle_SC_Login(SC_Login pkt, Client client)
         {
             GameClient c = ((client as Client<GameClient>)._obj);
-            c._syncStart.Set();
 
             InfServer.Log.write(String.Format("(Result={0}) -  (Config={1}) - (Message={2})", pkt.result, pkt.zoneConfig, pkt.popupMessage));
-            c._wGame.updateChat(String.Format("(Result={0}) -  (Config={1}) - (Message={2})", 
-                pkt.result, pkt.zoneConfig, pkt.popupMessage), "ZoneServer", InfServer.Protocol.Helpers.Chat_Type.PrivateChat,"");
 
             //No sense in being connected anymore
             if (pkt.result == SC_Login.Login_Result.Failed)
@@ -74,6 +71,19 @@ namespace FreeInfantryClient.Game.Logic
                 discon.connectionID = client._connectionID;
                 discon.reason = Disconnect.DisconnectReason.DisconnectReasonApplication;
                 client.send(discon);
+                c._bLoginSuccess = false;
+                return;
+            }
+
+            c._bLoginSuccess = true;
+
+            //Signal our completion
+            c._syncStart.Set();
+
+            if (c.loadAssets(pkt.zoneConfig))
+            {
+                InfServer.Log.write(String.Format("Could not load game assets, exiting.."));
+                c.quit();
                 return;
             }
 
@@ -96,6 +106,7 @@ namespace FreeInfantryClient.Game.Logic
         {
             //We're past the login process, let's join an arena!
             GameClient c = ((client as Client<GameClient>)._obj);
+
             //Blank arena name = first available public arena
             c.joinArena("");
         }
@@ -106,9 +117,8 @@ namespace FreeInfantryClient.Game.Logic
         static public void Handle_SC_SetIngame(SC_SetIngame pkt, Client client)
         {
             GameClient c = ((client as Client<GameClient>)._obj);
-            c._syncStart.Set();
+            c.gameLoaded();
 
-            c._wGame.updateChat("We're in!", "ZoneServer", InfServer.Protocol.Helpers.Chat_Type.System, "");
 
         }
         /// <summary>

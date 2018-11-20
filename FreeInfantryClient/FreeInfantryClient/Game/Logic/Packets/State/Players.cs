@@ -28,6 +28,12 @@ namespace FreeInfantryClient.Game.Logic
 
         }
 
+        static public void Handle_SC_ChangeTeam(SC_ChangeTeam pkt, Client client)
+        {
+            GameClient c = ((client as Client<GameClient>)._obj);
+            c._arena.playerChangeTeam(pkt.playerID, pkt.teamname);
+        }
+
         /// <summary>
         /// Registers all handlers
         /// </summary>
@@ -35,6 +41,7 @@ namespace FreeInfantryClient.Game.Logic
         static public void Register()
         {
             SC_PlayerEnter.Handlers += Handle_SC_Players;
+            SC_ChangeTeam.Handlers += Handle_SC_ChangeTeam;
             SC_PlayerLeave.Handlers += Handle_SC_PlayerLeave;
         }
     }

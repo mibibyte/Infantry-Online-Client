@@ -34,17 +34,19 @@
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.chatSend = new System.Windows.Forms.TextBox();
             this.chatLog = new System.Windows.Forms.RichTextBox();
-            this.lstPlayers = new System.Windows.Forms.ListBox();
+            this.pnlRight = new System.Windows.Forms.Panel();
+            this.lstPlayers = new System.Windows.Forms.TreeView();
+            this.pnlRight.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnSend
             // 
             this.btnSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSend.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnSend.Location = new System.Drawing.Point(917, 511);
+            this.btnSend.Location = new System.Drawing.Point(944, 508);
             this.btnSend.Margin = new System.Windows.Forms.Padding(0);
             this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(48, 27);
+            this.btnSend.Size = new System.Drawing.Size(57, 27);
             this.btnSend.TabIndex = 2;
             this.btnSend.Text = "Send";
             this.btnSend.UseVisualStyleBackColor = true;
@@ -54,7 +56,7 @@
             // 
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(974, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1001, 24);
             this.menuStrip1.TabIndex = 7;
             // 
             // optionsToolStripMenuItem
@@ -73,41 +75,50 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.chatSend.BackColor = System.Drawing.SystemColors.WindowFrame;
             this.chatSend.ForeColor = System.Drawing.Color.Aquamarine;
-            this.chatSend.Location = new System.Drawing.Point(12, 511);
+            this.chatSend.Location = new System.Drawing.Point(12, 508);
             this.chatSend.Multiline = true;
             this.chatSend.Name = "chatSend";
-            this.chatSend.Size = new System.Drawing.Size(902, 27);
+            this.chatSend.Size = new System.Drawing.Size(929, 27);
             this.chatSend.TabIndex = 4;
             this.chatSend.KeyUp += new System.Windows.Forms.KeyEventHandler(this.chatSend_KeyUp);
             // 
             // chatLog
             // 
-            this.chatLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.chatLog.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.chatLog.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.chatLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.chatLog.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
-            this.chatLog.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.chatLog.Location = new System.Drawing.Point(12, 33);
+            this.chatLog.ForeColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.chatLog.Location = new System.Drawing.Point(12, 30);
             this.chatLog.Name = "chatLog";
             this.chatLog.ReadOnly = true;
+            this.chatLog.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.chatLog.Size = new System.Drawing.Size(820, 472);
-            this.chatLog.TabIndex = 5;
+            this.chatLog.TabIndex = 9;
             this.chatLog.Text = "";
+            this.chatLog.Enter += new System.EventHandler(this.chatLog_Enter);
+            this.chatLog.MouseDown += new System.Windows.Forms.MouseEventHandler(this.chatLog_MouseDown);
+            this.chatLog.MouseMove += new System.Windows.Forms.MouseEventHandler(this.chatLog_MouseMove);
+            this.chatLog.MouseUp += new System.Windows.Forms.MouseEventHandler(this.chatLog_MouseUp);
+            // 
+            // pnlRight
+            // 
+            this.pnlRight.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pnlRight.Controls.Add(this.lstPlayers);
+            this.pnlRight.Location = new System.Drawing.Point(835, 30);
+            this.pnlRight.Name = "pnlRight";
+            this.pnlRight.Size = new System.Drawing.Size(163, 469);
+            this.pnlRight.TabIndex = 11;
             // 
             // lstPlayers
             // 
-            this.lstPlayers.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lstPlayers.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.lstPlayers.ForeColor = System.Drawing.Color.Gold;
-            this.lstPlayers.FormattingEnabled = true;
-            this.lstPlayers.Location = new System.Drawing.Point(838, 33);
-            this.lstPlayers.Margin = new System.Windows.Forms.Padding(0);
+            this.lstPlayers.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstPlayers.BackColor = System.Drawing.Color.Black;
+            this.lstPlayers.ForeColor = System.Drawing.Color.White;
+            this.lstPlayers.LineColor = System.Drawing.Color.Gold;
+            this.lstPlayers.Location = new System.Drawing.Point(3, 3);
             this.lstPlayers.Name = "lstPlayers";
-            this.lstPlayers.Size = new System.Drawing.Size(127, 472);
-            this.lstPlayers.TabIndex = 8;
+            this.lstPlayers.Size = new System.Drawing.Size(157, 321);
+            this.lstPlayers.TabIndex = 0;
             // 
             // Game
             // 
@@ -115,8 +126,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.InactiveCaption;
-            this.ClientSize = new System.Drawing.Size(974, 538);
-            this.Controls.Add(this.lstPlayers);
+            this.ClientSize = new System.Drawing.Size(1001, 535);
+            this.Controls.Add(this.pnlRight);
             this.Controls.Add(this.chatLog);
             this.Controls.Add(this.chatSend);
             this.Controls.Add(this.btnSend);
@@ -131,6 +142,7 @@
             this.Load += new System.EventHandler(this.Game_Load);
             this.Move += new System.EventHandler(this.Game_Move);
             this.Resize += new System.EventHandler(this.Game_Resize);
+            this.pnlRight.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -143,8 +155,7 @@
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
         private System.Windows.Forms.TextBox chatSend;
         private System.Windows.Forms.RichTextBox chatLog;
-        private System.Windows.Forms.ListBox lstPlayers;
-
-
+        private System.Windows.Forms.Panel pnlRight;
+        private System.Windows.Forms.TreeView lstPlayers;
     }
 }

@@ -13,6 +13,7 @@ using InfServer.Protocol;
 using InfServer;
 using FreeInfantryClient.Game.Commands;
 using FreeInfantryClient.Game.Protocol;
+using Assets;
 
 
 namespace FreeInfantryClient.Game
@@ -28,7 +29,10 @@ namespace FreeInfantryClient.Game
         public ManualResetEvent _syncStart;     //Used for blocking connect attempts
         public bool _bLoginSuccess;             //Were we able to successfully login?
         public int _connectionID;
-        public Commands.Registrar _commandRegistrar;	//Our chat command registrar
+        public bool _bInGame;
+        public Commands.Registrar _commandRegistrar;    //Our chat command registrar
+
+        public CfgInfo _zoneConfig;				//The zone-specific configuration file
 
         public GameClient(Windows.Game wGame, string alias, string ticketid)
         {
@@ -36,7 +40,7 @@ namespace FreeInfantryClient.Game
             _conn = new ClientConn<GameClient>(new S2CPacketFactory<GameClient>(), this);
             _syncStart = new ManualResetEvent(false);
 
-            _player = new Player();
+            _player = new Player(true);
             _player._gameclient = this;
 
             _player._ticketid = ticketid;
@@ -56,12 +60,14 @@ namespace FreeInfantryClient.Game
 
         public void quit()
         {
+            //Clean up stuff
+            gameClosing();
+           
             //Send our disconnect signal
             disconnect();
 
             //Close our game form.
             _wGame.FadeOut(80);
-
 
         }
 
@@ -96,6 +102,55 @@ namespace FreeInfantryClient.Game
             _conn._client.send(init);
 
         }
+
+        /// <summary>
+        /// Looks after the gamestate
+        /// </summary>
+        public void handleState()
+        {
+            new Thread(() =>
+            {
+
+
+
+                //Get an image of the arena list
+                int lastArenaUpdate = Environment.TickCount;
+
+                while (_bInGame)
+                {   //Is it time to update our list yet?
+                    if (Environment.TickCount - lastArenaUpdate > 1000)
+                    {
+                        lastArenaUpdate = Environment.TickCount;
+
+
+                        try
+                        {
+                            using (LogAssume.Assume(_logger))
+                                _arena.poll();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.write(TLog.Exception, "Exception whilst polling arena {0}:\r\n{1}", _arena._name, ex);
+                        }
+
+                        try
+                        {
+                            using (LogAssume.Assume(_logger))
+                                _player.poll();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.write(TLog.Exception, "Exception whilst polling playerstate {0}:\r\n{1}", _arena._name, ex);
+                        }
+                    }
+
+                    // Sleep for a bit
+                    Thread.Sleep(5);
+
+                }
+            }).Start();
+        }
+
 
         /// <summary>
         /// Sends a reliable packet to the client
@@ -153,6 +208,18 @@ namespace FreeInfantryClient.Game
             }
         }
         #endregion
+
+        public void gameLoaded()
+        {
+            _bInGame = true;
+            handleState();
+            _player.loadChats();
+        }
+
+        public void gameClosing()
+        {
+            _bInGame = false;
+        }
 
         #region Social Updates
         public void sendChat(string message, string recipient, InfServer.Protocol.Helpers.Chat_Type type)

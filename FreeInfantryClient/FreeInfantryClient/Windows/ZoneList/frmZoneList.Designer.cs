@@ -107,7 +107,7 @@
             this.btnPlay.UseVisualStyleBackColor = true;
             this.btnPlay.Click += new System.EventHandler(this.btnPlay_Click);
             // 
-            // ZoneList
+            // frmZoneList
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -117,7 +117,8 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.boxList);
-            this.Name = "ZoneList";
+            this.Name = "frmZoneList";
+            this.ShowIcon = false;
             this.Text = "ZoneList";
             this.Load += new System.EventHandler(this.frmZoneList_Load);
             this.boxList.ResumeLayout(false);

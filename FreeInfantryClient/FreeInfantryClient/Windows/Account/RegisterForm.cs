@@ -85,7 +85,6 @@ namespace FreeInfantryClient.Windows.Account
             warned = true;
         }
 
-        private IniFile settings;
         private bool warned = false;
 
         private void RegisterForm_Load(object sender, EventArgs e)

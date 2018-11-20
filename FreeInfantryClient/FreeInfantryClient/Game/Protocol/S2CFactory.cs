@@ -169,12 +169,24 @@ namespace FreeInfantryClient.Game.Protocol
                     packet = new SC_AssetInfo(typeID, buffer, offset, size);
                     break;
 
+                case SC_ChangeTeam.TypeID:
+                    packet = new SC_ChangeTeam(typeID, buffer, offset, size);
+                    break;
+
                 case SC_SetIngame.TypeID:
                     packet = new SC_SetIngame(typeID, buffer, offset, size);
                     break;
 
+                case SC_PlayerWarp.TypeID:
+                    packet = new SC_PlayerWarp(typeID, buffer, offset, size);
+                    break;
+
                 case SC_Chat.TypeID:
                     packet = new SC_Chat(typeID, buffer, offset, size);
+                    break;
+
+                case SC_VehicleDeath.TypeID:
+                    packet = new SC_VehicleDeath(typeID, buffer, offset, size);
                     break;
 
                 case SC_PlayerEnter.TypeID:

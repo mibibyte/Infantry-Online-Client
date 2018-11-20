@@ -2,26 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using FreeInfantryClient.Game;
 
 using InfServer.Network;
 
 namespace InfServer.Protocol
 {	/// <summary>
-	/// SC_PlayerEnter contains updates regarding players entering the arena 
+	/// SC_ChangeTeam notifies a client of a forced team change
 	/// </summary>
-	public class SC_PlayerEnter : PacketBase
+	public class SC_ChangeTeam : PacketBase
 	{	// Member Variables
 		///////////////////////////////////////////////////
-        public string teamname;
-        public string alias;
-        public string squad;
-        public ushort id;
+		public UInt16 playerID;
+		public Int16 teamID;
+		public string teamname;
 
-		public IEnumerable<Player> players;
-
-		public const ushort TypeID = (ushort)Helpers.PacketIDs.S2C.PlayerEnter;
-        static public event Action<SC_PlayerEnter, Client> Handlers;
+		public const ushort TypeID = (ushort)Helpers.PacketIDs.S2C.ChangeTeam;
+        static public event Action<SC_ChangeTeam, Client> Handlers;
 
 
         public override void Route()
@@ -38,24 +34,37 @@ namespace InfServer.Protocol
         /// Creates an empty packet of the specified type. This is used
         /// for constructing new packets for sending.
         /// </summary>
-        public SC_PlayerEnter()
+        public SC_ChangeTeam()
             : base(TypeID)
         { }
 
 
-        public SC_PlayerEnter(ushort typeID, byte[] buffer, int index, int count)
+        public SC_ChangeTeam(ushort typeID, byte[] buffer, int index, int count)
             : base(typeID, buffer, index, count)
         {
         }
 
         public override void Deserialize()
         {
+
+            playerID = _contentReader.ReadUInt16();
+            teamID = _contentReader.ReadInt16();
             teamname = ReadString(32);
-            alias = ReadString(32);
-            squad = ReadString(32);
-            id = _contentReader.ReadUInt16();
-         
+
         }
+
+        /// <summary>
+        /// Serializes the data stored in the packet class into a byte array ready for sending.
+        /// </summary>
+        public override void Serialize()
+		{	//Type ID
+			Write((byte)TypeID);
+
+			//Contents
+			Write(playerID);
+			Write(teamID);
+			Write(teamname, 32);
+		}
 
 		/// <summary>
 		/// Returns a meaningful of the packet's data
@@ -64,9 +73,8 @@ namespace InfServer.Protocol
 		{
 			get
 			{
-				return "Player info.";
+				return "Team change to '" + teamname + "'";
 			}
 		}
-
-    }
+	}
 }

@@ -58,6 +58,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Game\Objects\Arena\ArenaState.cs" />
+    <Compile Include="Game\Objects\Arena\ArenaUpdate.cs" />
+    <Compile Include="Game\Assets\AssetManager.Cache.cs" />
+    <Compile Include="Game\Assets\AssetManager.cs" />
+    <Compile Include="Game\Assets\AssetManager.Lio.cs" />
+    <Compile Include="Game\Assets\Assets.cs" />
+    <Compile Include="Game\GameAssets.cs" />
     <Compile Include="Game\GameClient.cs" />
     <Compile Include="Game\Interfaces\ILocatable.cs" />
     <Compile Include="Game\Logic\Commands\Chat\Chat.cs" />
@@ -65,22 +72,31 @@
     <Compile Include="Game\Logic\Packets\Arena\Arena.cs" />
     <Compile Include="Game\Logic\Packets\Login\Login.cs" />
     <Compile Include="Game\Logic\Packets\State\Players.cs" />
+    <Compile Include="Game\Logic\Packets\Update\Player.cs" />
+    <Compile Include="Game\Logic\Packets\Update\Vehicles.cs" />
     <Compile Include="Game\Logic\Registrar.cs" />
+    <Compile Include="Game\Objects\Team.cs" />
     <Compile Include="Game\Objects\CustomObject.cs" />
     <Compile Include="Game\Objects\ObjTracker.cs" />
-    <Compile Include="Game\Objects\Arena.cs" />
-    <Compile Include="Game\Objects\Player.cs" />
+    <Compile Include="Game\Objects\Arena\Arena.cs" />
+    <Compile Include="Game\Objects\Player\PlayerState.cs" />
+    <Compile Include="Game\Objects\Player\Player.cs" />
     <Compile Include="Game\Logic\Packets\Social\Chat.cs" />
+    <Compile Include="Game\Objects\Vehicle.cs" />
     <Compile Include="Game\Protocol\Helpers\Objects.cs" />
     <Compile Include="Game\Protocol\Helpers\PacketIDs.cs" />
     <Compile Include="Game\Protocol\Helpers\UpdateTypes.cs" />
     <Compile Include="Game\Protocol\Packets\Arena\CS_ArenaJoin.cs" />
     <Compile Include="Game\Protocol\Packets\Arena\SC_ArenaList.cs" />
-    <Compile Include="Game\Protocol\Packets\Game\SC_ChangeTeam.cs" />
+    <Compile Include="Game\Protocol\Packets\Game\State\SC_ChangeTeam.cs" />
     <Compile Include="Game\Protocol\Packets\Game\State\CS_Disconnect.cs" />
     <Compile Include="Game\Protocol\Packets\Game\State\SC_ArenaMessage.cs" />
     <Compile Include="Game\Protocol\Packets\Game\State\SC_PlayerLeave.cs" />
     <Compile Include="Game\Protocol\Packets\Game\State\SC_PlayerEnter.cs" />
+    <Compile Include="Game\Protocol\Packets\Game\Update\CS_PlayerUpdate.cs" />
+    <Compile Include="Game\Protocol\Packets\Game\Update\SC_PlayerUpdate.cs" />
+    <Compile Include="Game\Protocol\Packets\Game\Update\SC_PlayerWarp.cs" />
+    <Compile Include="Game\Protocol\Packets\Game\Update\SC_VehicleDeath.cs" />
     <Compile Include="Game\Protocol\Packets\Login\CS_Login.cs" />
     <Compile Include="Game\Protocol\Packets\Login\CS_Ready.cs" />
     <Compile Include="Game\Protocol\Packets\Login\SC_AssetInfo.cs" />
@@ -136,6 +152,7 @@
     <Compile Include="Windows\Account\ReminderForm.designer.cs">
       <DependentUpon>ReminderForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Windows\Game\Controls\GameControls.cs" />
     <Compile Include="Windows\Game\Dialogs\ArenaList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -149,6 +166,7 @@
     <Compile Include="Windows\Game\frmGame.Designer.cs">
       <DependentUpon>frmGame.cs</DependentUpon>
     </Compile>
+    <Compile Include="Windows\Game\Updates\GameSocial.cs" />
     <Compile Include="Windows\ZoneList\Directory\Directory.cs" />
     <Compile Include="Windows\ZoneList\Directory\Objects\Zone.cs" />
     <Compile Include="Windows\ZoneList\frmZoneList.cs">
@@ -204,7 +222,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\" />
     <Folder Include="Audio\" />
     <Folder Include="Graphics\" />
     <Folder Include="Physics\" />

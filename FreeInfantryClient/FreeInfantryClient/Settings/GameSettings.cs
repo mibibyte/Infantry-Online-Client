@@ -48,12 +48,7 @@ namespace FreeInfantryClient.Settings
         #region Chats
         internal class Chats
         {
-            public static string _chat0 { get; set; }
-            public static string _chat1 { get; set; }
-            public static string _chat2 { get; set; }
-            public static string _chat3 { get; set; }
-            public static string _chat4 { get; set; }
-            public static string _chat5 { get; set; }
+            public static List<string> _chats;
         }
         #endregion
 
@@ -128,12 +123,14 @@ namespace FreeInfantryClient.Settings
             #endregion
 
             #region Chat Settings
-            Chats._chat0 = settings.sections["Chat"].setting["Channel0"];
-            Chats._chat1 = settings.sections["Chat"].setting["Channel1"];
-            Chats._chat2 = settings.sections["Chat"].setting["Channel2"];
-            Chats._chat3 = settings.sections["Chat"].setting["Channel3"];
-            Chats._chat4 = settings.sections["Chat"].setting["Channel4"];
-            Chats._chat5 = settings.sections["Chat"].setting["Channel5"];
+            Chats._chats = new List<string>();
+            foreach (string chat in settings.sections["Chat"].GetValues())
+            {
+                if (string.IsNullOrEmpty(chat))
+                    continue;
+
+                Chats._chats.Add(chat);
+            }
             #endregion
 
 
@@ -169,12 +166,16 @@ namespace FreeInfantryClient.Settings
             #endregion
 
             #region Chat Settings
-            settings.sections["Chat"].setting["Channel0"] = Chats._chat0;
-            settings.sections["Chat"].setting["Channel1"] = Chats._chat1;
-            settings.sections["Chat"].setting["Channel2"] = Chats._chat2;
-            settings.sections["Chat"].setting["Channel3"] = Chats._chat3;
-            settings.sections["Chat"].setting["Channel4"] = Chats._chat4;
-            settings.sections["Chat"].setting["Channel5"] = Chats._chat5;
+            int chatcount = Chats._chats.Count();
+            int index = 0;
+            foreach (string chat in Chats._chats)
+            {
+                settings.sections["Chat"].setting["Channel" + index] = chat;
+                index++;
+
+                if (index == 5)
+                    break;
+            }
             #endregion
 
             settings.Save();

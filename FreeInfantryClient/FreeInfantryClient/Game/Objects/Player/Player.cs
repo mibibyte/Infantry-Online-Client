@@ -11,6 +11,7 @@ using InfServer.Protocol;
 using InfServer.Logic;
 
 using Assets;
+using FreeInfantryClient.Settings;
 
 
 namespace FreeInfantryClient.Game
@@ -29,6 +30,13 @@ namespace FreeInfantryClient.Game
         public List<DateTime> _msgTimeStamps;   //For spam checking
         public GameClient _gameclient;
         public string _lastPM = null;
+        public List<string> _chats;             //The chats we belong to
+        public Team _team;                      //The team we belong to
+
+        public Player(bool local)
+        {
+            _state = new Helpers.ObjectState();
+        }
 
         #region Credentials
         public ushort _id;						//Unique zone id for a player
@@ -36,7 +44,6 @@ namespace FreeInfantryClient.Game
         public string _ticketid;
 
         public string _alias;					//Our current name
-        public string _team;
         public string _squad;					//The squad he belongs to
         public long _squadID;
 
@@ -69,6 +76,24 @@ namespace FreeInfantryClient.Game
         public uint _assetCS;
 
         #endregion
+
+        #region Social
+        public void loadChats()
+        {
+
+            string chats = "";
+            foreach (string chat in GameSettings.Chats._chats)
+            {
+                chats += chat + ",";
+            }
+
+            chats = chats.TrimEnd(',');
+
+            _gameclient.sendChat(string.Format("?chat {0}", chats), "", InfServer.Protocol.Helpers.Chat_Type.Normal);
+
+
+        }
+        #endregion 
 
     }
 }

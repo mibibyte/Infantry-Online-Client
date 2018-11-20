@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using InfServer.Logic;
 using InfServer.Protocol;
 using InfServer.Network;
+using FreeInfantryClient.Settings;
 
 namespace FreeInfantryClient.Game.Commands
 {
@@ -24,6 +25,82 @@ namespace FreeInfantryClient.Game.Commands
         /// </summary>
         public static void arena(Player player, Player recipient, string payload, int bong)
         {
+        }
+
+        /// <summary>
+        /// Join/leave chats
+        /// </summary>
+        public static void chat(Player player, Player recipient, string payload, int bong)
+        {
+           
+            //Ignore empty ?chat
+            if (string.IsNullOrEmpty(payload))
+                return;
+
+
+            //Are we turning chats off?
+            if (payload == "off")
+            {
+                //Leave all chats
+                GameSettings.Chats._chats.Clear();
+                return;
+            }
+
+            //Split it
+            string[] chats = payload.Split(',');
+
+            if (chats.Count() == 0)
+                return;
+
+            if (chats.Count() > 6)
+                return;
+
+
+
+            //Clear it first
+            GameSettings.Chats._chats.Clear();
+
+            //Readd them in the order specified
+            foreach (string chat in chats)
+                GameSettings.Chats._chats.Add(chat);
+        }
+
+        /// <summary>
+        /// Join/leave chats
+        /// </summary>
+        public static void chatadd(Player player, Player recipient, string payload, int bong)
+        {
+
+            if (GameSettings.Chats._chats.Count() == 6)
+                return;
+
+            if (string.IsNullOrEmpty(payload))
+                return;
+
+            GameSettings.Chats._chats.Add(payload);
+
+            //Reload
+            player.loadChats();
+        }
+
+        /// <summary>
+        /// Join/leave chats
+        /// </summary>
+        public static void chatdrop(Player player, Player recipient, string payload, int bong)
+        {
+            if (GameSettings.Chats._chats.Count() == 0)
+                return;
+
+            if (string.IsNullOrEmpty(payload))
+                return;
+
+            if (!GameSettings.Chats._chats.Contains(payload))
+                return;
+
+            GameSettings.Chats._chats.Remove(payload);
+
+            //Reload
+            player.loadChats();
         }
 
         /// <summary>
@@ -81,6 +158,18 @@ namespace FreeInfantryClient.Game.Commands
             yield return new HandlerDescriptor(go, "go",
                 "Switches a users current arena",
                 "?go or ?go new arena", true);
+
+            yield return new HandlerDescriptor(chat, "chat",
+                "Joins/Leaves specified chats",
+                "?chat chat1,chat2,chat3", true);
+
+            yield return new HandlerDescriptor(chatadd, "chatadd",
+                "Joins specified chat",
+                "?chatadd chat", true);
+
+            yield return new HandlerDescriptor(chatdrop, "chatdrop",
+                "Leaves specified chat",
+                "?chatdrop chat", true);
 
             yield return new HandlerDescriptor(quit, "quit",
                 "Leaves the current zone and brings the user back to the zonelist",
